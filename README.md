@@ -8,7 +8,8 @@ A simple Java Spring Boot web application to decode and view JWT tokens, inspire
 - No need for a secret key to view the payload
 - Works with both signed and unsigned JWTs
 
-## How to Run
+
+## How to Run Locally
 
 1. Make sure you have Java 17+ and Maven installed.
 2. In the project directory, run:
@@ -16,6 +17,32 @@ A simple Java Spring Boot web application to decode and view JWT tokens, inspire
    mvn spring-boot:run
    ```
 3. Open your browser and go to [http://localhost:8080](http://localhost:8080)
+
+## How to Deploy on Render (Free Cloud Hosting)
+
+1. Build your app locally (optional):
+   ```sh
+   mvn clean package
+   ```
+2. Make sure your code is pushed to GitHub and includes the `Dockerfile` in the project root:
+   ```dockerfile
+   # Use official Eclipse Temurin Java 17 runtime as builder
+   FROM eclipse-temurin:17-jdk as builder
+   WORKDIR /app
+   COPY . .
+   RUN apt-get update && apt-get install -y maven
+   RUN mvn clean package
+   FROM eclipse-temurin:17-jre
+   WORKDIR /app
+   COPY --from=builder /app/target/*.jar app.jar
+   EXPOSE 8080
+   CMD ["java", "-jar", "app.jar"]
+   ```
+3. Go to [Render](https://render.com/) and sign up/login.
+4. Click "New Web Service" and connect your GitHub repo.
+5. Select **Docker** as the environment and set Dockerfile path to `Dockerfile`.
+6. Click "Create Web Service" and wait for deployment.
+7. Your app will be live at the public URL provided by Render.
 
 ## Usage
 
