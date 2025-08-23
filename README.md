@@ -42,7 +42,10 @@ A simple Java Spring Boot web application to decode and view JWT tokens, inspire
 4. Click "New Web Service" and connect your GitHub repo.
 5. Select **Docker** as the environment and set Dockerfile path to `Dockerfile`.
 6. Click "Create Web Service" and wait for deployment.
+
 7. Your app will be live at the public URL provided by Render.
+
+**Live Demo:** [https://jwt-viewer.onrender.com/](https://jwt-viewer.onrender.com/)
 
 ## Usage
 
