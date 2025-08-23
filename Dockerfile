@@ -3,7 +3,11 @@ FROM eclipse-temurin:17-jdk as builder
 
 WORKDIR /app
 COPY . .
-RUN ./mvnw clean package || mvn clean package
+
+# Install Maven
+RUN apt-get update && apt-get install -y maven
+
+RUN mvn clean package
 
 # Use a smaller JRE image for running the app
 FROM eclipse-temurin:17-jre
