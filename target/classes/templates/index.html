@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>JWT Viewer</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { display: flex; gap: 40px; }
+        .panel { flex: 1; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        textarea { width: 100%; height: 200px; font-size: 16px; }
+        .result { white-space: pre-wrap; background: #f9f9f9; padding: 10px; border-radius: 6px; }
+        button { margin-top: 10px; padding: 8px 16px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h1>JWT Viewer</h1>
+    <form method="post" action="/decode">
+        <div class="container">
+            <div class="panel">
+                <label for="jwtToken">Paste JWT Token:</label><br>
+                <textarea id="jwtToken" name="jwtToken" th:text="${jwtToken}"></textarea>
+                <div style="margin-top:10px;">
+                    <label><input type="radio" name="jwtType" value="signed" checked> Signed</label>
+                    <label><input type="radio" name="jwtType" value="unsigned"> Unsigned</label>
+                </div>
+                <button type="submit">Decode</button>
+            </div>
+            <div class="panel">
+                <label>Decoded Header:</label>
+                <pre class="result json-view" id="headerJson" th:text="${headerJson}"></pre>
+                <label style="margin-top:10px;">Decoded Payload:</label>
+                <pre class="result json-view" id="payloadJson" th:text="${payloadJson}"></pre>
+                <div th:if="${error}" style="color:red; margin-top:10px;">[[${error}]]</div>
+                <script>
+                function syntaxHighlight(json) {
+                    if (!json) return '';
+                    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?)|(\b(true|false|null)\b)|(-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                        var cls = 'number';
+                        if (/^"/.test(match)) {
+                            if (/:$/.test(match)) {
+                                cls = 'key';
+                            } else {
+                                cls = 'string';
+                            }
+                        } else if (/true|false/.test(match)) {
+                            cls = 'boolean';
+                        } else if (/null/.test(match)) {
+                            cls = 'null';
+                        }
+                        return '<span class="' + cls + '">' + match + '</span>';
+                    });
+                }
+                document.addEventListener('DOMContentLoaded', function() {
+                    var headerElem = document.getElementById('headerJson');
+                    var payloadElem = document.getElementById('payloadJson');
+                    var header = headerElem.textContent.trim();
+                    var payload = payloadElem.textContent.trim();
+                    try {
+                        header = JSON.stringify(JSON.parse(header), null, 2);
+                    } catch(e) {}
+                    try {
+                        payload = JSON.stringify(JSON.parse(payload), null, 2);
+                    } catch(e) {}
+                    headerElem.innerHTML = syntaxHighlight(header);
+                    payloadElem.innerHTML = syntaxHighlight(payload);
+                });
+                </script>
+                <style>
+                .json-view .key { color: #922; }
+                .json-view .string { color: #080; }
+                .json-view .number { color: #00f; }
+                .json-view .boolean { color: #a52a2a; }
+                .json-view .null { color: #b5b5b5; }
+                </style>
+            </div>
+        </div>
+    </form>
+</body>
+</html>
