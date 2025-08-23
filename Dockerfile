@@ -1,12 +1,13 @@
-# Use official Eclipse Temurin Java 17 runtime
-FROM eclipse-temurin:17-jre
+# Use official Eclipse Temurin Java 17 runtime as builder
+FROM eclipse-temurin:17-jdk as builder
 
 WORKDIR /app
+COPY . .
+RUN ./mvnw clean package || mvn clean package
 
-# Copy the built jar from target directory
-COPY target/*.jar app.jar
-
+# Use a smaller JRE image for running the app
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 8080
-
-# Run the Spring Boot app
 CMD ["java", "-jar", "app.jar"]
