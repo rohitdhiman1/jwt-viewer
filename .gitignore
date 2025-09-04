@@ -10,7 +10,7 @@
 *.iml
 
 # Maven/Java
-/target/
+target/
 
 # Logs
 *.log
